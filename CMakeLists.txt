@@ -36,7 +36,6 @@ else()
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /INCREMENTAL:NO")
   endif()
   choreonoid_add_plugin(${target} ${sources} HEADERS ${headers})
-  Message ("AssemblerVR: ${OPENVR_LIBRARIES}")
   target_link_libraries(${target} PUBLIC
     CnoidUtil
     RobotAssembler
