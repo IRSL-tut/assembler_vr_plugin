@@ -43,4 +43,5 @@ else()
     CnoidOpenVRPlugin
   )
 
+  add_subdirectory(pybind11)
 endif()
