@@ -6,6 +6,7 @@
 #include "../../openvr_plugin/src/OpenVRPlugin.h"
 
 #include <cnoid/SceneItem>
+#include <cnoid/SceneDrawables>
 
 namespace cnoid {
 
@@ -26,6 +27,9 @@ private:
 
     SceneItemPtr leftHand;
     SceneItemPtr rightHand;
+
+    SgSwitchableGroupPtr left_switch;
+    SgSwitchableGroupPtr right_switch;
     //// bodyitem
 };
 
