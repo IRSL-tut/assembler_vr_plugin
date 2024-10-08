@@ -46,15 +46,22 @@ robot_assembler::RASceneBase *AssemblerVRProcess::pick_object(coordinates &cam_c
         if (np.size() == 0) {
             return nullptr;
         }
+        RASceneParts *pt_ = nullptr;
+        RASceneConnectingPoint *cp_ = nullptr;
         for(auto n = np.begin(); n != np.end(); n++) {
             SgNode *ptr = *n;
             *os_ << "  name:" << (*n)->name();
             *os_ << ", cls:" << (*n)->className() << std::endl;
-            robot_assembler::RASceneBase *res = dynamic_cast<robot_assembler::RASceneBase *>(ptr);
-            if (!!res) {
-                *os_ << "found: " << res->name() << std::endl;
-                return res;
-            }
+            if(!pt_) pt_ = dynamic_cast<RASceneParts *>(ptr);
+            if(!cp_) cp_ = dynamic_cast<RASceneConnectingPoint *>(ptr);
+            if(!!pt_ && !!cp_) break;
+        }
+        if(!!cp_) {
+            //connecting-point picked
+            return cp_;
+        } else if (!!pt_) {
+            //parts picked
+            return pt_;
         }
     }
     return nullptr;
