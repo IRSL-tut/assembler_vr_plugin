@@ -10,7 +10,7 @@
 
 namespace cnoid {
 
-class AssemblerVRProcess
+class CNOID_EXPORT AssemblerVRProcess
 {
 public:
     AssemblerVRProcess();
@@ -22,15 +22,19 @@ public:
     void updateControllerState(const controllerState &left, const controllerState &right);
 
     std::ostream *os_;
-private:
+
+//private:
     AssemblerManager *as_manager;
     OpenVRPlugin *vr_plugin;
 
     SceneItemPtr leftHand;
     SceneItemPtr rightHand;
 
+    SgSwitchableGroupPtr left_switch_bm;
     SgSwitchableGroupPtr left_switch;
     SgScaleTransformPtr left_scale;
+
+    SgSwitchableGroupPtr right_switch_bm;
     SgSwitchableGroupPtr right_switch;
     SgScaleTransformPtr right_scale;
     //// bodyitem

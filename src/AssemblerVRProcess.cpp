@@ -8,6 +8,7 @@
 #include <cnoid/SceneWidget>
 #include <cnoid/SceneRenderer>
 #include <cnoid/GLSLSceneRenderer>
+#include <cnoid/SceneCameras>
 
 using namespace cnoid;
 
@@ -24,11 +25,15 @@ robot_assembler::RASceneBase *AssemblerVRProcess::pick_object(coordinates &cam_c
     cam_coords.toPosition(newT);
     sw->builtinCameraTransform()->setPosition(newT);
 
+    left_switch->setTurnedOn(false);
     right_switch->setTurnedOn(false);
+    sw->builtinPerspectiveCamera()->setFieldOfView(0.02); //
     sw->makeCurrent();
     sr->pick(sw->width()/2, sw->height()/2);
     sw->doneCurrent();
+    left_switch->setTurnedOn(true);
     right_switch->setTurnedOn(true);
+
     sw->builtinCameraTransform()->setPosition(orgT);
 
     GLSLSceneRenderer *glsr = static_cast<GLSLSceneRenderer *>(sr);
@@ -72,7 +77,9 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの処理一覧
             left_scale = new SgScaleTransform();
             left_scale->setScale(0.8);//矢印の大きさを変える
             tp->moveChildrenTo(left_scale);
-            tp->addChild(left_scale);
+            left_switch = new SgSwitchableGroup();
+            left_switch->addChild(left_scale);
+            tp->addChild(left_switch);
         }
     }
     {
@@ -82,7 +89,7 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの処理一覧
             rightHand = static_cast<SceneItem *>(p);//右手のオブジェクトに変換（キャスト）
             //// making beam
 #define AXIS_LENGTH 30.0//軸の長さ（ビーム）
-            right_switch = new SgSwitchableGroup();
+            right_switch_bm = new SgSwitchableGroup();
             SgPosTransform *trs = new SgPosTransform();
             SgShape *sph = new SgShape();
             { //// material
@@ -100,9 +107,9 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの処理一覧
             sph->setName("right beam");
             trs->setTranslation(Vector3(0, 0, AXIS_LENGTH*-0.5));
             trs->addChild(sph);
-            right_switch->addChild(trs);
-            rightHand->topNode()->addChild(right_switch);
-            right_switch->setTurnedOn(true);
+            right_switch_bm->addChild(trs);
+            rightHand->topNode()->addChild(right_switch_bm);
+            right_switch_bm->setTurnedOn(true);
             rightHand->topNode()->notifyUpdate(SgUpdate::Modified);
             ////
             //// insert scale between transform and shape
@@ -110,7 +117,9 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの処理一覧
             right_scale = new SgScaleTransform();
             right_scale->setScale(0.2);
             tp->moveChildrenTo(right_scale);
-            tp->addChild(right_scale);
+            right_switch = new SgSwitchableGroup();
+            right_switch->addChild(right_scale);
+            tp->addChild(right_switch);
         }
     }
 
