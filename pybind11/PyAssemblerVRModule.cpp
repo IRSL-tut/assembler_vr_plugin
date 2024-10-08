@@ -14,6 +14,9 @@
 
 #include "../../robot_assembler_plugin/src/irsl_choreonoid/Coordinates.h"
 
+#include "../src/AssemblerVRPlugin.h"
+#include "../src/AssemblerVRProcess.h"
+
 using namespace cnoid;
 namespace py = pybind11;
 
@@ -88,8 +91,31 @@ PYBIND11_MODULE(AssemblerVR, m)
     py::module::import("cnoid.Base");
     //py::module::import("cnoid.IRSLCoords");
 
-    //py::class_<View, PyQObjectHolder<View>, QWidget> view(m, "View");
-
     m.def("pick", &pick);
     m.def("pick_cam", &pick_cam);
+
+    py::class_<AssemblerVRPlugin> plugin(m, "AssemblerVRPlugin");
+    plugin
+    .def_property_readonly_static("instance", [](py::object){ return AssemblerVRPlugin::instance(); })
+    ;
+
+    py::class_<AssemblerVRProcess> proc(m, "AssemblerVRProcess");
+    proc
+    .def_property_readonly_static("instance", [](py::object){
+        return AssemblerVRPlugin::instance()->getProcess();
+    })
+    .def("pick_object", &AssemblerVRProcess::pick_object)
+    .def("setLeftCoords", &AssemblerVRProcess::setLeftCoords)
+    .def("setRightCoords", &AssemblerVRProcess::setRightCoords)
+    .def("setProjectionMatrix", [](AssemblerVRProcess &self, double scale) {
+        if (!!(self.vr_plugin)) {
+            self.vr_plugin->setProjectionMatrix(scale);
+        }
+    })
+    .def("setEyeDifferenceScale", [](AssemblerVRProcess &self, double scale) {
+        if (!!(self.vr_plugin)) {
+            self.vr_plugin->setEyeDifferenceScale(scale);
+        }
+    })
+    ;
 }

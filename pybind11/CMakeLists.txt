@@ -27,6 +27,6 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR})
 else()
   # Build as a bundled project / under ext
   target_link_libraries(${TARGET}
-    CnoidUtil CnoidBase
+    CnoidUtil CnoidBase CnoidAssemblerVRPlugin
     )
 endif()

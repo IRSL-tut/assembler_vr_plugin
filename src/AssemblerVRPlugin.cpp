@@ -78,6 +78,11 @@ bool AssemblerVRPlugin::finalize()
     return true;
 }
 
+AssemblerVRProcess *AssemblerVRPlugin::getProcess()
+{
+    return impl->proc;
+}
+
 const char* AssemblerVRPlugin::description() const
 {
     static std::string text =
