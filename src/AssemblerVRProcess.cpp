@@ -24,10 +24,11 @@ robot_assembler::RASceneBase *AssemblerVRProcess::pick_object(coordinates &cam_c
     cam_coords.toPosition(newT);
     sw->builtinCameraTransform()->setPosition(newT);
 
+    right_switch->setTurnedOn(false);
     sw->makeCurrent();
     sr->pick(sw->width()/2, sw->height()/2);
     sw->doneCurrent();
-
+    right_switch->setTurnedOn(true);
     sw->builtinCameraTransform()->setPosition(orgT);
 
     GLSLSceneRenderer *glsr = static_cast<GLSLSceneRenderer *>(sr);
@@ -42,10 +43,11 @@ robot_assembler::RASceneBase *AssemblerVRProcess::pick_object(coordinates &cam_c
         }
         for(auto n = np.begin(); n != np.end(); n++) {
             SgNode *ptr = *n;
-            //std::cout << "  name:" << (*n)->name();
-            //std::cout << ", cls:" << (*n)->className() << std::endl;
+            *os_ << "  name:" << (*n)->name();
+            *os_ << ", cls:" << (*n)->className() << std::endl;
             robot_assembler::RASceneBase *res = dynamic_cast<robot_assembler::RASceneBase *>(ptr);
             if (!!res) {
+                *os_ << "found: " << res->name() << std::endl;
                 return res;
             }
         }
@@ -53,70 +55,77 @@ robot_assembler::RASceneBase *AssemblerVRProcess::pick_object(coordinates &cam_c
     return nullptr;
 }
 
-AssemblerVRProcess::AssemblerVRProcess()
+AssemblerVRProcess::AssemblerVRProcess()//VRでの処理一覧
 {
-    as_manager = AssemblerManager::instance();
-    vr_plugin  = OpenVRPlugin::instance();
+    as_manager = AssemblerManager::instance();//AssembleManegerのインスタンス
+    vr_plugin  = OpenVRPlugin::instance();//OpenVRPluginのインスタンス
 
     {
-        Item *p = RootItem::instance()->findItem("leftHand");
-        if (!!p) {
-            leftHand = static_cast<SceneItem *>(p);
+        Item *p = RootItem::instance()->findItem("leftHand");//左手(名前がleftHand)のItemを見つけてくる
+        if (!!p) {//Item_pが存在するとき
+            leftHand = static_cast<SceneItem *>(p);//左手のオブジェクトに変換（キャスト）
+            //// making beam(left hund)
+            ////
+            ////
             //// insert scale between transform and shape
             SgPosTransform *tp = leftHand->topNode();
             left_scale = new SgScaleTransform();
+            left_scale->setScale(0.8);//矢印の大きさを変える
             tp->moveChildrenTo(left_scale);
             tp->addChild(left_scale);
         }
     }
     {
-        Item *p = RootItem::instance()->findItem("rightHand");
+        Item *p = RootItem::instance()->findItem("rightHand");//右手(名前がrightHand)のItemを見つけてくる
         if (!!p) {
             //// register Item
-            rightHand = static_cast<SceneItem *>(p);
-
+            rightHand = static_cast<SceneItem *>(p);//右手のオブジェクトに変換（キャスト）
             //// making beam
-#define AXIS_LENGTH 30.0
+#define AXIS_LENGTH 30.0//軸の長さ（ビーム）
             right_switch = new SgSwitchableGroup();
             SgPosTransform *trs = new SgPosTransform();
             SgShape *sph = new SgShape();
             { //// material
                 SgMaterial *sgm = sph->getOrCreateMaterial();
-                Vector3f diff(0., 1., 1.); //// color
+                Vector3f diff(0., 1., 1.); //// color of axis(ビームの色)
                 sgm->setDiffuseColor(diff);
-                sgm->setAmbientIntensity(0.7);
+                sgm->setAmbientIntensity(0.7);//ビームの太さ
                 sgm->setTransparency(0.6);
             }
             { //// mesh
-                Vector3 size(AXIS_LENGTH, 0.02, 0.02);
+                Vector3 size(0.02, 0.02, AXIS_LENGTH);
                 MeshGenerator mg;
                 sph->setMesh(mg.generateBox(size));
             }
-            trs->setTranslation(Vector3(AXIS_LENGTH*0.5, 0, 0));
+            sph->setName("right beam");
+            trs->setTranslation(Vector3(0, 0, AXIS_LENGTH*-0.5));
             trs->addChild(sph);
             right_switch->addChild(trs);
             rightHand->topNode()->addChild(right_switch);
             right_switch->setTurnedOn(true);
             rightHand->topNode()->notifyUpdate(SgUpdate::Modified);
+            ////
             //// insert scale between transform and shape
             SgPosTransform *tp = rightHand->topNode();
             right_scale = new SgScaleTransform();
+            right_scale->setScale(0.2);
             tp->moveChildrenTo(right_scale);
             tp->addChild(right_scale);
         }
     }
 
-    if(!!vr_plugin) {
+    if(!!vr_plugin) {//コントローラの情報取得
         vr_plugin->sigUpdateControllerState().connect(std::bind(&AssemblerVRProcess::updateControllerState, this,
                                                                 std::placeholders::_1, std::placeholders::_2));
     }
 
     if(!!vr_plugin) {
-        vr_plugin->setProjectionMatrix(4.0);
+        //vr_plugin->setProjectionMatrix(2.0);
+        //vr_plugin->setEyeDifferenceScale(1/4.0);
     }
 }
 
-void AssemblerVRProcess::updateControllerState(const controllerState &left, const controllerState &right)
+void AssemblerVRProcess::updateControllerState(const controllerState &left, const controllerState &right)//コントローラの状態更新
 {
     setLeftCoords(left.coords);
     setRightCoords(right.coords);
@@ -126,15 +135,14 @@ void AssemblerVRProcess::updateControllerState(const controllerState &left, cons
         robot_assembler::RASceneRobot *rb = as_manager->searchNearest(right.coords.pos, 0.1);
         if (!!rb) {
             as_manager->selectRobot(rb);
-            //
             as_manager->moveRobot(rb, right.coords);
         }
-    }
 
+    }
     return;
 }
 
-void AssemblerVRProcess::setLeftCoords(const coordinates &cds)
+void AssemblerVRProcess::setLeftCoords(const coordinates &cds)//左手の座標セット
 {
     if (!!leftHand) {
         Isometry3 T;
@@ -143,7 +151,7 @@ void AssemblerVRProcess::setLeftCoords(const coordinates &cds)
     }
 }
 
-void AssemblerVRProcess::setRightCoords(const coordinates &cds)
+void AssemblerVRProcess::setRightCoords(const coordinates &cds)//右手の座標セット
 {
     if (!!rightHand) {
         Isometry3 T;
