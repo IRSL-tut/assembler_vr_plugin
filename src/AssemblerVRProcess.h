@@ -21,6 +21,7 @@ public:
 
     void updateControllerState(const controllerState &left, const controllerState &right);
 
+    std::ostream *os_;
 private:
     AssemblerManager *as_manager;
     OpenVRPlugin *vr_plugin;
@@ -29,8 +30,12 @@ private:
     SceneItemPtr rightHand;
 
     SgSwitchableGroupPtr left_switch;
+    SgScaleTransformPtr left_scale;
     SgSwitchableGroupPtr right_switch;
+    SgScaleTransformPtr right_scale;
     //// bodyitem
+
+    robot_assembler::RASceneBase *pick_object(coordinates &cam_coords);
 };
 
 }

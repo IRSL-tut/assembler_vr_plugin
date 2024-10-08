@@ -11,7 +11,7 @@
 
 using namespace cnoid;
 
-static robot_assembler::RASceneBase *pick_object(coordinates &cam_coords)
+robot_assembler::RASceneBase *AssemblerVRProcess::pick_object(coordinates &cam_coords)
 {
     SceneView     *sv = SceneView::instance();
     SceneWidget   *sw = sv->sceneWidget();
@@ -35,8 +35,8 @@ static robot_assembler::RASceneBase *pick_object(coordinates &cam_coords)
         //glsr->pickedNodePoint();
         const SgNodePath &np = glsr->pickedNodePath();
         const Vector3    &pt = glsr->pickedPoint();
-        std::cout << "point : " << pt.x() << ", " << pt.y() << ", " << pt.z() << std::endl;
-        std::cout << "NodePath : size : " << np.size() << std::endl;
+        *os_ << "point : " << pt.x() << ", " << pt.y() << ", " << pt.z() << std::endl;
+        *os_ << "NodePath : size : " << np.size() << std::endl;
         if (np.size() == 0) {
             return nullptr;
         }
@@ -62,6 +62,11 @@ AssemblerVRProcess::AssemblerVRProcess()
         Item *p = RootItem::instance()->findItem("leftHand");
         if (!!p) {
             leftHand = static_cast<SceneItem *>(p);
+            //// insert scale between transform and shape
+            SgPosTransform *tp = leftHand->topNode();
+            left_scale = new SgScaleTransform();
+            tp->moveChildrenTo(left_scale);
+            tp->addChild(left_scale);
         }
     }
     {
@@ -93,12 +98,21 @@ AssemblerVRProcess::AssemblerVRProcess()
             rightHand->topNode()->addChild(right_switch);
             right_switch->setTurnedOn(true);
             rightHand->topNode()->notifyUpdate(SgUpdate::Modified);
+            //// insert scale between transform and shape
+            SgPosTransform *tp = rightHand->topNode();
+            right_scale = new SgScaleTransform();
+            tp->moveChildrenTo(right_scale);
+            tp->addChild(right_scale);
         }
     }
 
     if(!!vr_plugin) {
         vr_plugin->sigUpdateControllerState().connect(std::bind(&AssemblerVRProcess::updateControllerState, this,
                                                                 std::placeholders::_1, std::placeholders::_2));
+    }
+
+    if(!!vr_plugin) {
+        vr_plugin->setProjectionMatrix(4.0);
     }
 }
 

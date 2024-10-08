@@ -35,6 +35,8 @@ void AssemblerVRPlugin::Impl::initialize()
 {
     proc = new AssemblerVRProcess();
     os_ = &(MessageView::instance()->cout(false));
+    proc->os_ = os_;
+    *os_ << "initialize AssemblerVRPlugin" << std::endl;
 }
 
 
