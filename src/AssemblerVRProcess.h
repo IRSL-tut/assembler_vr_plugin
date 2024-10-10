@@ -8,6 +8,8 @@
 #include <cnoid/SceneItem>
 #include <cnoid/SceneDrawables>
 
+#include "exportdecl.h"
+
 namespace cnoid {
 
 class CNOID_EXPORT AssemblerVRProcess

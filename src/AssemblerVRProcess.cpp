@@ -11,6 +11,7 @@
 #include <cnoid/SceneCameras>
 
 using namespace cnoid;
+using namespace cnoid::robot_assembler;
 
 robot_assembler::RASceneBase *AssemblerVRProcess::pick_object(coordinates &cam_coords)
 {
