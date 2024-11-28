@@ -43,8 +43,8 @@ robot_assembler::RASceneBase *AssemblerVRProcess::pick_object(const coordinates 
         //glsr->pickedNodePoint();
         const SgNodePath &np = glsr->pickedNodePath();
         const Vector3    &pt = glsr->pickedPoint();
-        // *os_ << "point : " << pt.x() << ", " << pt.y() << ", " << pt.z() << std::endl;
-        // *os_ << "NodePath : size : " << np.size() << std::endl;
+        //*os_ << "point : " << pt.x() << ", " << pt.y() << ", " << pt.z() << std::endl;
+        //*os_ << "NodePath : size : " << np.size() << std::endl;
         if (np.size() == 0) {
             return nullptr;
         }
@@ -52,8 +52,8 @@ robot_assembler::RASceneBase *AssemblerVRProcess::pick_object(const coordinates 
         RASceneConnectingPoint *cp_ = nullptr;
         for(auto n = np.begin(); n != np.end(); n++) {
             SgNode *ptr = *n;
-            // *os_ << "  name:" << (*n)->name();
-            // *os_ << ", cls:" << (*n)->className() << std::endl;
+            //*os_ << "  name:" << (*n)->name();
+            //*os_ << ", cls:" << (*n)->className() << std::endl;
             if(!pt_) pt_ = dynamic_cast<RASceneParts *>(ptr);
             if(!cp_) cp_ = dynamic_cast<RASceneConnectingPoint *>(ptr);
             if(!!pt_ && !!cp_) break;
@@ -79,12 +79,10 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの初期処理一覧
         if (!!p) {//Item_pが存在するとき
             leftHand = static_cast<SceneItem *>(p);//左手のオブジェクトに変換（キャスト）
             //// making beam(left hand)
-            ////
-            ////
             //// insert scale between transform and shape
-            SgPosTransform *tp = leftHand->topNode();
+            SgPosTransform *tp = leftHand->topNode();//lefthandのトップノードのポインタ
             left_scale = new SgScaleTransform();
-            left_scale->setScale(0.8);//矢印の大きさを変える
+            left_scale->setScale(0.2);//矢印の大きさを変える
             tp->moveChildrenTo(left_scale);
             left_switch = new SgSwitchableGroup();
             left_switch->addChild(left_scale);
@@ -109,7 +107,7 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの初期処理一覧
                 sgm->setTransparency(0.6);//透明性
             }
             { //// mesh
-                Vector3 size(0.02, 0.02, AXIS_LENGTH);//ビームサイズ（細長い直方体）
+                Vector3 size(0.005, 0.005, AXIS_LENGTH);//ビームサイズ（細長い直方体）
                 MeshGenerator mg;
                 sph->setMesh(mg.generateBox(size));
             }
@@ -122,27 +120,15 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの初期処理一覧
             rightHand->topNode()->notifyUpdate(SgUpdate::Modified);
             ////
             //// insert scale between transform and shape
-            SgPosTransform *tp = leftHand->topNode();
+            SgPosTransform *tp = rightHand->topNode();
             right_scale = new SgScaleTransform();
-            right_scale->setScale(0.8);
+            right_scale->setScale(0.2);
             tp->moveChildrenTo(right_scale);
             right_switch = new SgSwitchableGroup();
+            right_switch->setName("right_switch");
             right_switch->addChild(right_scale);
             tp->addChild(right_switch);
         }
-    }
-    {//追記部分
-        //robot_assembler::RASceneBase *finditem = AssemblerVRProcess::pick_object(rightHand);
-        //エラー引数 1 を 'cnoid::SceneItemPtr' から 'cnoid::coordinates&' へ変換できません。
-        //sceneItemptrクラスのrightHandをcoordinatesの形に変換して与える
-        //sceneItemptrの記載ファイルが不明
-        //rightHand = static_cast<SceneItem *>(p)
-        //void itemSelected(AssemblerItemPtr itm, bool on);
-        //static_cast<coordinates *>(rightHand)
-        //printf(get_pointer_object);
-        // if(!!get_pointer_object){
-        //     //*os_ << "find item"<< std::endl;
-        // }
     }
     if(!!vr_plugin) {//コントローラの情報取得
         vr_plugin->sigUpdateControllerState().connect(std::bind(&AssemblerVRProcess::updateControllerState, this,
@@ -157,62 +143,102 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの初期処理一覧
 
 
 void AssemblerVRProcess::updateControllerState(const controllerState &right, const controllerState &left)//コントローラの状態更新(入れ替わってたら逆にする)
-{ 
+{   
     setLeftCoords(left.coords);
     setRightCoords(right.coords);
+    
     vr_plugin->setCameraOrigin(left.axes[0],left.axes[1],right.axes[0],right.axes[1]);//ジョイスティックによるカメラ移動
     //// sample xxx
     if (!!as_manager) {
-        robot_assembler::RASceneRobot *rb = as_manager->searchNearest(right.coords.pos, 0.1);
-        if (!!rb) {
-            as_manager->selectRobot(rb);
-            as_manager->moveRobot(rb, right.coords);
-        }
-        
-        // *os_ << "button right: ";
-        // *os_ << right.buttons[0] << " ";
-        // *os_ << right.buttons[1] << " ";
-        // *os_ << right.buttons[2] << " ";
-        // *os_ << right.buttons[3] << " ";
-        // *os_ << right.buttons[4] << " ";
-        // *os_ << right.axes[0]    << " ";
-        // *os_ <<std::endl;
-        if(right.buttons[0] != 0){
-             vr_plugin->setEyeDifferenceScale(1);
-             *os_ << "change matrix"<<std::endl;
-        }
-        else{
-            vr_plugin->setEyeDifferenceScale(1/20);
-        }
-        if (right.buttons[3] != 0) {
-            RASceneBase *obj = pick_object(right.coords);
-            *os_ << "searching: "<< std::endl;
-            if (!!obj) {
-                *os_ << "picked: " << obj->name()<< std::endl;
-                RASceneParts *pt_  = dynamic_cast<RASceneParts *>(obj);
-                if(!!pt_){
-                    //pt_,ptrはパーツ
-                }
-                RASceneConnectingPoint *cp_ = dynamic_cast<RASceneConnectingPoint *>(obj);
-                if(!!cp_){
-                    //cp_,ptr=connectingpoint
-                }
-                if(right.buttons[4] && (!!pt_)){
-                    as_manager->selectRobot(pt_->scene_robot());
-                    as_manager->deleteRobot(pt_->scene_robot());
+        obj = pick_object(right.coords);
+        if(!!obj){
+            pt_  = dynamic_cast<RASceneParts *>(obj);
+            if(!!pt_){
+                if(!right.buttons[3]){
+                    rb_ = pt_->scene_robot();//ptのRASceneRobotを取得
                 }
             }
+            cp_ = dynamic_cast<RASceneConnectingPoint *>(obj);
+            if(!!cp_){
+                vr_plugin->causeVive(500);//500ms
+                // if((cp_->name())!=(cp_test->name())){//pickされたcpが変わったら
+                // }
+            }
         }
+        if (!!right.buttons[3]) {
+            //robot_assembler::RASceneRobot *obj = as_manager->searchNearest(right.coords.pos, 4);
+            if(!!rb_){
+                grabrobot(rb_,right.coords);
+                // coordinates cds(rb->T());//objのcoordsを取得
+                // coordinates diff,set;
+                // set = right.coords;
+                // diff.pos = right.coords.pos - PreviousControllerCoords.pos;//コントローラの変化量
+                // set.pos = cds.pos + diff.pos;//差分の加算
+                // as_manager->selectRobot(rb);
+                // as_manager->moveRobot(rb, set);
+            }
+        }
+        if (!!right.buttons[4]) {
+            if(btn_flg == 0){
+                if(!!pt_){
+                    // as_manager->selectRobot(pt_->scene_robot());
+                    // as_manager->partsClicked(pt_);
+                }
+                if(!!cp_){
+                    as_manager->selectRobot(cp_->scene_robot());
+                    as_manager->pointClicked(cp_);
+                }
+            }
+            
+            //RASceneBase *obj = pick_object(right.coords);
+            // if (!!obj) {
+            //     //as_manager->moveRobot(rb_, right.coords);
+            //     if(!!pt_){
+            //         //pt_,ptrはパーツ
+            //         // coordinates diff,set;
+            //         // coordinates cds(rb->T());//rbの座標取得
+            //         // set = right.coords;//rbのcoords情報取得
+            //         // diff.pos = right.coords.pos - PreviousControllerCoords.pos;//コントローラの変化量
+            //         // set.pos = cds.pos + diff.pos;//差分の加算
+            //         //pt_->scene_robot();
+            //         //as_manager->deleteRobot(pt_->scene_robot());
+            //         //as_manager->partsClicked(pt_);
+            //     }
+            //     RASceneConnectingPoint *cp_ = dynamic_cast<RASceneConnectingPoint *>(obj);
+            //     if(!!cp_){
+            //         //cp_,ptr=connectingpoint
+            //         //as_manager->selectRobot(cp_->scene_robot());
+            //         //as_manager->pointClicked(cp_);
+            //     }
+            // }
+            btn_flg = 1;
+        }
+        else{btn_flg=0;}
+        if(!!right.buttons[0]){
+            as_manager->attachRobots();
+        }
+        if(!!right.buttons[1]){
+            vr_plugin->causeVive(500);
+        }
+        PreviousControllerCoords = right.coords;//コントローラのcoords保持
+        cp_test = cp_;
     }
-
     return;
 }
 
-void AssemblerVRProcess::moveselectrobot(){
-
+void AssemblerVRProcess::grabrobot(ra::RASceneRobot* rb,const coordinates &hand){
+    coordinates diff,set;
+    coordinates cds(rb->T());//objのcoordsを取得
+    set = hand;
+    diff.pos = hand.pos - PreviousControllerCoords.pos;//コントローラの位置変化量
+    set.pos = cds.pos + diff.pos;//差分位置の加算
+    Matrix3 rotationMatrix = hand.rot *  PreviousControllerCoords.rot.transpose();
+    set.rot = cds.rot * rotationMatrix;
+    as_manager->selectRobot(rb);
+    as_manager->moveRobot(rb, set);
 }
 void AssemblerVRProcess::setLeftCoords(const coordinates &cds)//左手の座標セット
-{
+{   
     if (!!leftHand) {
         Isometry3 T;
         cds.toPosition(T);

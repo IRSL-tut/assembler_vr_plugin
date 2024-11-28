@@ -1,8 +1,38 @@
 やる機能リスト
 ・選択したオブジェクトをコントローラと同期して動かす。
-→そのためにカメラ位置をジョイスティックで動かす機能を戻す。
-OpenVRに対して外部からアクセスして、原点位置を変えるメソッドの追加
+手のオブジェクトに対して、coordinates or Isometry関数をいじって座標をずらしてみる
+→そのためにカメラ位置をジョイスティックで動かす機能を戻す。〇
+RASceneBaseのcoords値を取得し、コントローラのcoords値とともに演算して、つかんで移動する機能を追加する。
 
+OpenVRに対して外部からアクセスして、原点位置を変えるメソッドの追加〇
+attachのテスト〇
+UIの再現したい
+ほかの機能のテスト
+クリック感が悪い→重複入力の阻止
+
+コントローラに合わせて位置を移動する戦略
+RASceneBaseのvoid setCoords(const coordinates &_coords)で位置を変更する。
+RASceneBaseの現在coordsはcoordinates cds(obj->T());で取得
+コントローラの現在coordsはleft.coordsで取得可能
+
+×振動機能にassemblerVRPluginからアクセスする
+×ボタンの多重入力を防ぐ
+×視点方向を前としてカメラ座標移動機能を変更する
+×UIの実装
+
+△pickobjectのRASceneRobot版を作る→多分できてるけど、バグって落ちる
+→pickobjectから探ると失敗
+→RASceneRobotからだと微妙
+→clickedから逆算
+普通にpt_->RAscenerobot()でRASceneRobot帰ってくるくね→つまり関数作る意味なかった
+演算処理
+/////////////////////////////////////
+◎オブジェクトをpickobjectを用いて持ってくる
+・振動機能にAssemblerpluginからアクセス。
+//////////////////////////////////////
+１テストとして000にpick_objectした物体を移動してみる。
+2演算してやってみる
+・
 オブジェクト情報の取得
 auto rootItem = RootItem::instance();　→　アイテムインスタンスの取得
 auto →　型推論（勝手に対象にあった型名になる）
@@ -35,5 +65,17 @@ right.buttons[?]
 
 ra = cnoid::robotassembler
 
-ra::RASceneBase *coordsToScene(ra::RoboasmCoordsPtr _coords);//coordsPtr　→　RASceneBase
-RASceneBase?
+coordinates obj->axis.x?
+
+やるべきこと
+◎アイテムを持った時に、手前のアイテムを持たないようにする。
+・手のオブジェクト（コントローラの形fusion家でやろうandそもそも今の手のオブジェクトどこから持ってきている？）を自作してみる。
+現在手のオブジェクトは標準シーンファイル(axis.scen)で表現されている。
+◎振動機能の実装→できたがこれだけで選択が簡単かというとそんなこともなかった。
+・coordinatesについてposだけでなくrosの値もキープすることで、追加で回転の情報も保持できるようにしたい。
+→objのrotにcontrollerのrotを掛け算する
+・world(机の上で召喚してみる)をサンプルから召喚して見る(world.yamlの扱いが必須。現在robotpartsをyamlファイルから読み込んでいる部分を参照すればよい気がする。)
+・robot partsをVRコントローラ上から召喚するUIを考えて実装する。
+・ボタンがついてくるのを作る
+・召喚時の原点座標を指定する。
+

@@ -20,7 +20,7 @@ public:
 
     void setLeftCoords(const coordinates &cds);
     void setRightCoords(const coordinates &cds);
-    void moveselectrobot();
+    void grabrobot(ra::RASceneRobot* rb,const coordinates &hand);
     void updateControllerState(const controllerState &left, const controllerState &right);
 
     std::ostream *os_;
@@ -38,6 +38,15 @@ public:
     SgSwitchableGroupPtr right_switch_bm;
     SgSwitchableGroupPtr right_switch;
     SgScaleTransformPtr right_scale;
+    
+    coordinates PreviousControllerCoords;
+    robot_assembler::RASceneBase *obj = nullptr;
+    robot_assembler::RASceneParts *pt_ = nullptr;
+    robot_assembler::RASceneConnectingPoint *cp_ = nullptr;
+    robot_assembler::RASceneConnectingPoint *cp_test = nullptr;
+    robot_assembler::RASceneRobot *rb_ = nullptr;
+
+    bool btn_flg = 0;
     //// bodyitem
 
     robot_assembler::RASceneBase *pick_object(const coordinates &cam_coords);
