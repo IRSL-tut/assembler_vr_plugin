@@ -1,0 +1,39 @@
+やる機能リスト
+・選択したオブジェクトをコントローラと同期して動かす。
+→そのためにカメラ位置をジョイスティックで動かす機能を戻す。
+OpenVRに対して外部からアクセスして、原点位置を変えるメソッドの追加
+
+オブジェクト情報の取得
+auto rootItem = RootItem::instance();　→　アイテムインスタンスの取得
+auto →　型推論（勝手に対象にあった型名になる）
+virtual →　仮想関数（クラスを継承した先で再定義（オーバーライドできる））　継承前クラスと継承後クラスで呼び出したときに中身を変えられる
+static_cast →　基底クラスへのポインターを派生クラスへのポインターに変換する
+*> reinterpret_cast? ポインタのアドレス値を整数型の変数に格納　double * から　int* など違う方のポインタの返還
+std::bind→指定した関数をラップしたstd::functionを作る
+/////////////////////////////////////
+例
+auto func1 = std::bind(test_function, std::placeholders::_1, std::placeholders::_2);
+  ↓ // こんなイメージの関数(std::function)ができる
+void func1(?1, ?2) {
+    test_function(?1, ?2);
+}
+
+auto func2 = std::bind(test_function, std::placeholders::_1, 9);
+  ↓ // こんなイメージの関数(std::function)ができる
+void func2(?1) {
+    test_function(?1, 9);
+}
+///////////////////////////////////////////////////
+
+ボタン配置
+right.buttons[?]
+0→A
+1→B
+2→押し込み
+3→裏大
+4→裏小
+
+ra = cnoid::robotassembler
+
+ra::RASceneBase *coordsToScene(ra::RoboasmCoordsPtr _coords);//coordsPtr　→　RASceneBase
+RASceneBase?

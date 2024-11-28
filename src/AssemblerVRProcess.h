@@ -20,7 +20,7 @@ public:
 
     void setLeftCoords(const coordinates &cds);
     void setRightCoords(const coordinates &cds);
-
+    void moveselectrobot();
     void updateControllerState(const controllerState &left, const controllerState &right);
 
     std::ostream *os_;
@@ -29,8 +29,7 @@ public:
     AssemblerManager *as_manager;
     OpenVRPlugin *vr_plugin;
 
-    SceneItemPtr leftHand;
-    SceneItemPtr rightHand;
+    SceneItemPtr leftHand;    SceneItemPtr rightHand;
 
     SgSwitchableGroupPtr left_switch_bm;
     SgSwitchableGroupPtr left_switch;
@@ -41,7 +40,7 @@ public:
     SgScaleTransformPtr right_scale;
     //// bodyitem
 
-    robot_assembler::RASceneBase *pick_object(coordinates &cam_coords);
+    robot_assembler::RASceneBase *pick_object(const coordinates &cam_coords);
 };
 
 }
