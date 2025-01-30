@@ -76,16 +76,20 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの処理一覧
     {
         Item *p = RootItem::instance()->findItem("leftHand");//左手(名前がleftHand)のItemを見つけてくる
         if (!!p) {//Item_pが存在するとき
+            *os_ << "setting item:leftHand" << std::endl;
             leftHand = static_cast<SceneItem *>(p);//左手のオブジェクトに変換（キャスト）
             //// making beam(left hund)
             ////
             ////
             //// insert scale between transform and shape
             SgPosTransform *tp = leftHand->topNode();
+            tp->setName("l_top");
             left_scale = new SgScaleTransform();
+            left_scale->setName("l_scale");
             left_scale->setScale(0.8);//矢印の大きさを変える
             tp->moveChildrenTo(left_scale);
             left_switch = new SgSwitchableGroup();
+            left_switch->setName("l_sw");
             left_switch->addChild(left_scale);
             tp->addChild(left_switch);
         }
@@ -93,13 +97,17 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの処理一覧
     {
         Item *p = RootItem::instance()->findItem("rightHand");//右手(名前がrightHand)のItemを見つけてくる
         if (!!p) {
+            *os_ << "setting item:rightHand" << std::endl;
             //// register Item
             rightHand = static_cast<SceneItem *>(p);//右手のオブジェクトに変換（キャスト）
             //// making beam
 #define AXIS_LENGTH 30.0//軸の長さ（ビーム）
             right_switch_bm = new SgSwitchableGroup();
+            right_switch_bm->setName("r_sw_bm");
             SgPosTransform *trs = new SgPosTransform();
+            trs->setName("r_trs");
             SgShape *sph = new SgShape();
+            sph->setName("r_shape");
             { //// material
                 SgMaterial *sgm = sph->getOrCreateMaterial();
                 Vector3f diff(0., 1., 1.); //// color of axis(ビームの色)
@@ -117,15 +125,18 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの処理一覧
             trs->addChild(sph);
             right_switch_bm->addChild(trs);
             rightHand->topNode()->addChild(right_switch_bm);
+            rightHand->topNode()->setName("r_top");
             right_switch_bm->setTurnedOn(true);
             rightHand->topNode()->notifyUpdate(SgUpdate::Modified);
             ////
             //// insert scale between transform and shape
             SgPosTransform *tp = rightHand->topNode();
             right_scale = new SgScaleTransform();
+            right_scale->setName("r_scale");
             right_scale->setScale(0.2);
             tp->moveChildrenTo(right_scale);
             right_switch = new SgSwitchableGroup();
+            right_scale->setName("r_sw");
             right_switch->addChild(right_scale);
             tp->addChild(right_switch);
         }
@@ -134,6 +145,7 @@ AssemblerVRProcess::AssemblerVRProcess()//VRでの処理一覧
     if(!!vr_plugin) {//コントローラの情報取得
         vr_plugin->sigUpdateControllerState().connect(std::bind(&AssemblerVRProcess::updateControllerState, this,
                                                                 std::placeholders::_1, std::placeholders::_2));
+        vr_plugin->sigRequestHeadOrigin().connect(std::bind(&AssemblerVRProcess::setOriginOffset, this, std::placeholders::_1));
     }
 
     if(!!vr_plugin) {
@@ -157,6 +169,11 @@ void AssemblerVRProcess::updateControllerState(const controllerState &left, cons
 
     }
     return;
+}
+
+void AssemblerVRProcess::setOriginOffset(coordinates &offset)
+{
+    std::cout << "pos: " << offset.pos(0) << ", " << offset.pos(1) << ", " << offset.pos(2) << std::endl;
 }
 
 void AssemblerVRProcess::setLeftCoords(const coordinates &cds)//左手の座標セット

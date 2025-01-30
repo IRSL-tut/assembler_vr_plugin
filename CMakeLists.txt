@@ -38,6 +38,7 @@ else()
   choreonoid_add_plugin(${target} ${sources} HEADERS ${headers})
   target_link_libraries(${target} PUBLIC
     CnoidUtil
+    CnoidBodyPlugin
     RobotAssembler
     CnoidRobotAssemblerPlugin
     CnoidOpenVRPlugin

@@ -22,6 +22,7 @@ public:
     void setRightCoords(const coordinates &cds);
 
     void updateControllerState(const controllerState &left, const controllerState &right);
+    void setOriginOffset(coordinates &offset);
 
     std::ostream *os_;
 
