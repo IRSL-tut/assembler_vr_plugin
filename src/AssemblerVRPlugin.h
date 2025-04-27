@@ -2,6 +2,7 @@
 #define __CNOID_ASSEMBLERVR_PLUGIN_H__
 
 #include <cnoid/Plugin>
+#include "AssemblerVRProcess.h"
 
 #include "exportdecl.h"
 
@@ -20,6 +21,8 @@ public:
     virtual bool initialize() override;
     virtual bool finalize() override;
     virtual const char* description() const override;
+
+    AssemblerVRProcess *getProcess();
 
 private:
     class Impl;

@@ -33,8 +33,9 @@ AssemblerVRPlugin::Impl::Impl(AssemblerVRPlugin *_self) : self(_self), proc(null
 }
 void AssemblerVRPlugin::Impl::initialize()
 {
-    proc = new AssemblerVRProcess();
     os_ = &(MessageView::instance()->cout(false));
+    proc = new AssemblerVRProcess(os_);
+    *os_ << "initialize AssemblerVRPlugin" << std::endl;
 }
 
 
@@ -74,6 +75,11 @@ bool AssemblerVRPlugin::finalize()
 {
     DEBUG_PRINT();
     return true;
+}
+
+AssemblerVRProcess *AssemblerVRPlugin::getProcess()
+{
+    return impl->proc;
 }
 
 const char* AssemblerVRPlugin::description() const
