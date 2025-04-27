@@ -1,0 +1,33 @@
+format: ChoreonoidBody
+format_version: 2.0
+angle_unit: degree
+name: "depot"
+root_link: "fixed"
+links: 
+  - 
+    name: "fixed"
+    joint_type: fixed
+    mass: 1000
+    center_of_mass: [ 0, 0, -0.1 ]
+    inertia: [ 
+      100, 0, 0, 
+      0, 100, 0, 
+      0, 0, 100 ]
+    material: Ground
+    elements: 
+      - 
+        type: Visual
+        elements: 
+          - 
+            type: Resource
+            uri: "depot_wo_roof.scen"
+      - 
+        type: Collision
+        elements: 
+          - 
+            type: Transform
+            translation: [ 0, 0, -0.1 ]
+            elements: 
+              Shape:
+                appearance: { material: { diffuseColor: [ 1, 0, 0 ] }}
+                geometry: { type: Box, size: [ 30, 15, 0.2 ] }

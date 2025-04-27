@@ -1,0 +1,509 @@
+items: 
+  id: 0
+  name: "RootItem"
+  plugin: Base
+  class: RootItem
+  is_builtin_item: true
+  children: 
+    - 
+      id: 1
+      name: "rightHand"
+      plugin: Base
+      class: SceneItem
+      is_selected: true
+      is_checked: true
+      data: 
+        file: "C:/Users/irsl/VR/right_cont_test.stl"
+        format: GENERAL-3D-MODEL
+        meshLengthUnitHint: inch
+        translation: [ 0, 0, 0 ]
+        rotation: [ 1, 0, 0, 0 ]
+        angle_unit: degree
+        lightweight_rendering: false
+    - 
+      id: 2
+      name: "leftHand"
+      plugin: Base
+      class: SceneItem
+      is_selected: true
+      is_checked: true
+      data: 
+        file: "C:/Users/irsl/VR/left_cont_test.stl"
+        format: GENERAL-3D-MODEL
+        meshLengthUnitHint: inch
+        translation: [ 0, 0, 0 ]
+        rotation: [ 1, 0, 0, 0 ]
+        angle_unit: degree
+        lightweight_rendering: false
+    - 
+      id: 3
+      name: "Table"
+      plugin: Body
+      class: BodyItem
+      is_checked: true
+      data: 
+        file: "C:/Users/irsl/VR/dining_table.body"
+        format: CHOREONOID-BODY
+        rootPosition: [ 0.7, 0, 0 ]
+        rootAttitude: [ 
+          1, 0, 0, 
+          0, 1, 0, 
+          0, 0, 1 ]
+        jointPositions: [  ]
+        initialRootPosition: [ -2.5, 0, 0 ]
+        initialRootAttitude: [ 
+          1, 0, 0, 
+          0, 1, 0, 
+          0, 0, 1 ]
+        fix_root: true
+        collisionDetection: true
+        selfCollisionDetection: false
+        lock_location: false
+        scene_sensitive: true
+        zmp: [ 0, 0, 0 ]
+    - 
+      id: 4
+      name: "DepotWorld"
+      plugin: Body
+      class: WorldItem
+      is_checked: true
+      data: 
+        collision_detection: false
+        collision_detector: AISTCollisionDetector
+        default_material_table_file: "C:/Users/irsl/VR/materials.yaml"
+      children: 
+        - 
+          id: 5
+          name: "Depot"
+          plugin: Body
+          class: BodyItem
+          is_checked: true
+          data: 
+            file: "C:/Users/irsl/VR/depot.body"
+            format: CHOREONOID-BODY
+            rootPosition: [ 3.2, 0, 0 ]
+            rootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            jointPositions: [  ]
+            initialRootPosition: [ 0, 0, 0 ]
+            initialRootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            fix_root: true
+            collisionDetection: true
+            selfCollisionDetection: false
+            lock_location: false
+            scene_sensitive: true
+            zmp: [ 0, 0, 0 ]
+        - 
+          id: 6
+          name: "controller_desc"
+          plugin: Body
+          class: BodyItem
+          is_checked: true
+          data: 
+            file: "C:/Users/irsl/VR/controller_desc.body"
+            format: CHOREONOID-BODY
+            rootPosition: [ 1.6, -0.0552327674, 1.18127961 ]
+            rootAttitude: [ 
+              -0.00994654487, 0.999938342, 0.00493745316, 
+              -0.999881327, -0.0100038266, 0.0117156253, 
+              0.0117642964, -0.00482033722, 0.99991918 ]
+            jointPositions: [  ]
+            initialRootPosition: [ 0, 0, 0 ]
+            initialRootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            fix_root: false
+            collisionDetection: true
+            selfCollisionDetection: false
+            lock_location: false
+            scene_sensitive: true
+            zmp: [ 0, 0, 0 ]
+        - 
+          id: 7
+          name: "BodyBuilder"
+          plugin: Body
+          class: BodyItem
+          is_checked: true
+          data: 
+            file: "C:/Users/irsl/VR/con_inf_l.body"
+            format: CHOREONOID-BODY
+            rootPosition: [ 1.45, 0.662356049, 1.17094404 ]
+            rootAttitude: [ 
+              0.345829149, 0.938297501, -1.73472348e-18, 
+              -0.938297501, 0.345829149, 6.9388939e-18, 
+              7.11066475e-18, -7.71985071e-19, 1 ]
+            jointPositions: [  ]
+            initialRootPosition: [ 0, 0, 0 ]
+            initialRootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            fix_root: false
+            collisionDetection: true
+            selfCollisionDetection: false
+            lock_location: false
+            scene_sensitive: true
+            zmp: [ 0, 0, 0 ]
+        - 
+          id: 8
+          name: "BodyBuilder"
+          plugin: Body
+          class: BodyItem
+          is_checked: true
+          data: 
+            file: "C:/Users/irsl/VR/con_inf_r.body"
+            format: CHOREONOID-BODY
+            rootPosition: [ 1.45, -0.790939174, 1.17454434 ]
+            rootAttitude: [ 
+              -0.301910692, 0.953336213, 0, 
+              -0.953336213, -0.301910692, 0, 
+              0, 0, 1 ]
+            jointPositions: [  ]
+            initialRootPosition: [ 0, 0, 0 ]
+            initialRootAttitude: [ 
+              1, 0, 0, 
+              0, 1, 0, 
+              0, 0, 1 ]
+            fix_root: false
+            collisionDetection: true
+            selfCollisionDetection: false
+            lock_location: false
+            scene_sensitive: true
+            zmp: [ 0, 0, 0 ]    
+views: 
+  - 
+    id: 0
+    plugin: Base
+    class: ItemPropertyView
+  - 
+    id: 1
+    plugin: Base
+    class: ItemTreeView
+    mounted: true
+    state: 
+      expanded: [  ]
+  - 
+    id: 2
+    plugin: Base
+    class: LocationView
+    state: 
+      show_rpy: true
+      unique_rpy: false
+      show_quaternion: false
+      show_rotation_matrix: false
+      coordinate: parent
+  - 
+    id: 3
+    plugin: Base
+    class: MessageView
+    mounted: true
+  - 
+    id: 4
+    plugin: Base
+    class: SceneView
+    mounted: true
+    state: 
+      editMode: true
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
+      collisionLines: false
+      cameras: 
+        - 
+          camera: [ System, Perspective ]
+          isCurrent: true
+          eye: [ 3, 1.5, 1.2 ]
+          direction: [ -0.880451, -0.440225, -0.17609 ]
+          up: [ -0.1575, -0.0787496, 0.984374 ]
+        - 
+          camera: [ System, Orthographic ]
+          orthoHeight: 20
+      lightingMode: normal
+      cullingMode: enabled
+      worldLight: true
+      worldLightIntensity: 0.5
+      worldLightAmbient: 0.5
+      defaultHeadLight: true
+      defaultHeadLightIntensity: 0.5
+      world_light_shadow: true
+      backgroundColor: [ 0.1, 0.1, 0.3 ]
+      lineWidth: 1
+      pointSize: 1
+      field_of_view: 35
+      clip_distances: [ 0.04, 200 ]
+      floorGrid: true
+      floorGridSpan: 10
+      floorGridInterval: 0.5
+      xzGrid: false
+      xzGridSpan: 10
+      xzGridInterval: 0.5
+      yzGrid: false
+      yzGridSpan: 10
+      yzGridInterval: 0.5
+      xy_grid_color: [ 0.9, 0.9, 0.9 ]
+      xz_grid_color: [ 0.9, 0.9, 0.9 ]
+      yz_grid_color: [ 0.9, 0.9, 0.9 ]
+  - 
+    id: 5
+    plugin: Body
+    class: JointDisplacementView
+    state: 
+      show_selected_joints: false
+      show_joint_ids: true
+      show_joint_names: false
+      overlap_joint_names: false
+      show_sliders: true
+      show_dials: false
+      show_phases: true
+      limit_ranges: false
+  - 
+    id: 6
+    plugin: Body
+    class: LinkDeviceListView
+    state: 
+      element_type: all
+      listing_mode: list
+  - 
+    id: 7
+    plugin: Body
+    class: LinkPositionView
+    state: 
+      coordinate_mode: world
+      preferred_coordinate_mode: base
+      show_rpy: true
+      unique_rpy: false
+      show_quaternion: false
+      show_rotation_matrix: false
+      target_link_type: ik_link
+  - 
+    id: 8
+    plugin: Body
+    class: LinkPropertyView
+  - 
+    id: 9
+    plugin: Python
+    class: PythonConsoleView
+    mounted: true
+  - 
+    id: 10
+    plugin: RobotAssembler
+    class: AssemblerPartsView
+    mounted: true
+  - 
+    id: 11
+    plugin: RobotAssembler
+    class: AssemblerTreeView
+    mounted: true
+  - 
+    id: 12
+    plugin: RobotAssembler
+    class: AssemblerView
+    mounted: true
+  - 
+    id: 13
+    name: "left"
+    plugin: Base
+    class: SceneView
+    mounted: true
+    state: 
+      editMode: false
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
+      collisionLines: false
+      cameras: 
+        - 
+          camera: [ System, Perspective ]
+          isCurrent: true
+          eye: [ 2.07727, 0.0368435, 0.280711 ]
+          direction: [ -0.330761, -0.068555, -0.941221 ]
+          up: [ -0.885069, 0.368642, 0.284177 ]
+        - 
+          camera: [ System, Orthographic ]
+          orthoHeight: 20
+      lighting_mode: normal
+      culling_mode: enabled
+      shading_mode: smooth
+      world_light: true
+      world_light_intensity: 0.5
+      ambient_light: true
+      ambient_light_intensity: 0.5
+      head_light: true
+      head_light_intensity: 0.5
+      world_light_shadow: false
+      shadow_lights: 
+        - { index: 0, enabled: false }
+        - { index: 1, enabled: false }
+      background_color: [ 0.1, 0.1, 0.3 ]
+      line_width: 1
+      point_size: 1
+      field_of_view: 35
+      clip_distances: [ 0.04, 200 ]
+      floorGrid: true
+      floorGridSpan: 10
+      floorGridInterval: 0.5
+      xzGrid: false
+      xzGridSpan: 10
+      xzGridInterval: 0.5
+      yzGrid: false
+      yzGridSpan: 10
+      yzGridInterval: 0.5
+      xy_grid_color: [ 0.9, 0.9, 0.9 ]
+      xz_grid_color: [ 0.9, 0.9, 0.9 ]
+      yz_grid_color: [ 0.9, 0.9, 0.9 ]
+  - 
+    id: 14
+    name: "right"
+    plugin: Base
+    class: SceneView
+    mounted: true
+    state: 
+      editMode: false
+      viewpointOperationMode: thirdPerson
+      visible_polygon_elements: [ face ]
+      highlighting: false
+      collisionLines: false
+      cameras: 
+        - 
+          camera: [ System, Perspective ]
+          isCurrent: true
+          eye: [ 2.09958, 0.0999787, 0.268275 ]
+          direction: [ -0.330761, -0.068555, -0.941221 ]
+          up: [ -0.885069, 0.368642, 0.284177 ]
+        - 
+          camera: [ System, Orthographic ]
+          orthoHeight: 20
+      lighting_mode: normal
+      culling_mode: enabled
+      shading_mode: smooth
+      world_light: true
+      world_light_intensity: 0.5
+      ambient_light: true
+      ambient_light_intensity: 0.5
+      head_light: true
+      head_light_intensity: 0.5
+      world_light_shadow: false
+      shadow_lights: 
+        - { index: 0, enabled: false }
+        - { index: 1, enabled: false }
+      background_color: [ 0.1, 0.1, 0.3 ]
+      line_width: 1
+      point_size: 1
+      field_of_view: 35
+      clip_distances: [ 0.04, 200 ]
+      floorGrid: true
+      floorGridSpan: 10
+      floorGridInterval: 0.5
+      xzGrid: false
+      xzGridSpan: 10
+      xzGridInterval: 0.5
+      yzGrid: false
+      yzGridSpan: 10
+      yzGridInterval: 0.5
+      xy_grid_color: [ 0.9, 0.9, 0.9 ]
+      xz_grid_color: [ 0.9, 0.9, 0.9 ]
+      yz_grid_color: [ 0.9, 0.9, 0.9 ]    
+toolbars: 
+  "TimeBar": 
+    current_time: 0
+    min_time: 0
+    max_time: 30
+    frame_rate: 1000
+    playback_frame_rate: 60
+    idle_loop_driven_mode: false
+    playback_speed_ratio: 1
+    sync_to_ongoing_updates: true
+    auto_expansion: true
+  "LeggedBodyBar": 
+    stanceWidth: 0.15
+  "KinematicsBar": 
+    forward_kinematics: true
+    inverse_kinematics: true
+    preset_kinematics: true
+    enablePositionDragger: true
+    penetrationBlock: false
+    collisionLinkHighlight: false
+    snapDistance: 0.025
+    penetrationBlockDepth: 0.0005
+    lazyCollisionDetectionMode: true
+Body: 
+  "EditableSceneBody": { }
+  "KinematicFaultChecker": 
+    checkJointPositions: true
+    angleMargin: 0
+    translationMargin: 0
+    checkJointVelocities: true
+    velocityLimitRatio: 100
+    targetJoints: all
+    checkSelfCollisions: true
+    onlyTimeBarRange: false
+  "SplineFilterDialog": 
+    isInputFrameRateSpecified: false
+    inputFrameRate: 200
+    isOutputFrameRateSpecified: false
+    outputFrameRate: 200
+viewAreas: 
+  - 
+    type: embedded
+    tabs: true
+    contents: 
+      type: splitter
+      orientation: horizontal
+      sizes: [ 1412, 449 ]
+      children: 
+        - 
+          type: splitter
+          orientation: horizontal
+          sizes: [ 365, 1043 ]
+          children: 
+            - 
+              type: splitter
+              orientation: vertical
+              sizes: [ 226, 737 ]
+              children: 
+                - 
+                  type: pane
+                  views: [ 1 ]
+                - 
+                  type: pane
+                  views: [ 11 ]
+            - 
+              type: splitter
+              orientation: vertical
+              sizes: [ 790, 173 ]
+              children: 
+                - 
+                  type: pane
+                  views: [ 4, 13, 14 ]
+                  current: 4
+                - 
+                  type: pane
+                  views: [ 3, 9 ]
+                  current: 3
+        - 
+          type: splitter
+          orientation: vertical
+          sizes: [ 634, 329 ]
+          children: 
+            - 
+              type: pane
+              views: [ 12 ]
+            - 
+              type: pane
+              views: [ 10 ]
+layoutOfToolBars: 
+  rows: 
+    - 
+      - { name: "AssemblerBar", x: 0, priority: 0 }
+      - { name: "AssemblerSwapModeBar", x: 0, priority: 1 }
+      - { name: "SceneBar",  x: 0, priority: 2 }
+      - { name: "CaptureBar", x: 0, priority: 3 }
+  hidden: 
+    - "FileBar"
+    - "TimeBar"

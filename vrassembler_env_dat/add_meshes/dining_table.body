@@ -1,0 +1,32 @@
+format: ChoreonoidBody
+format_version: 2.0
+angle_unit: degree
+name: "dining_table"
+root_link: "fixed"
+links: 
+  - 
+    name: "fixed"
+    joint_type: fixed
+    mass: 5
+    center_of_mass: [ 0, 0, 0.3 ]
+    inertia: [ 
+      1, 0, 0, 
+      0, 1, 0, 
+      0, 0, 1 ]
+    elements: 
+      - 
+        type: Visual
+        elements: 
+          - 
+            type: Resource
+            uri: "dining_table.scen"
+      - 
+        type: Collision
+        elements: 
+          - 
+            type: Transform
+            translation: [ 0, 0, 0.725 ]
+            elements: 
+              Shape:
+                appearance: { material: { diffuseColor: [ 1, 0, 0 ] }}
+                geometry: { type: Box, size: [ 1.0, 2.35, 0.03 ] }
