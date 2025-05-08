@@ -72,10 +72,37 @@ coordinates obj->axis.x?
 ・手のオブジェクト（コントローラの形fusion家でやろうandそもそも今の手のオブジェクトどこから持ってきている？）を自作してみる。
 現在手のオブジェクトは標準シーンファイル(axis.scen)で表現されている。
 ◎振動機能の実装→できたがこれだけで選択が簡単かというとそんなこともなかった。
-・coordinatesについてposだけでなくrosの値もキープすることで、追加で回転の情報も保持できるようにしたい。
+◎coordinatesについてposだけでなくrosの値もキープすることで、追加で回転の情報も保持できるようにしたい。
 →objのrotにcontrollerのrotを掛け算する
 ・world(机の上で召喚してみる)をサンプルから召喚して見る(world.yamlの扱いが必須。現在robotpartsをyamlファイルから読み込んでいる部分を参照すればよい気がする。)
 ・robot partsをVRコントローラ上から召喚するUIを考えて実装する。
 ・ボタンがついてくるのを作る
 ・召喚時の原点座標を指定する。
+・右コントローラの左右でカメラ視点を回転させる。
 
+
+
+
+new
+
+・メニューバーなどの位置、向きを固定する。（座標割り出し）
+・pickobjectでbodyItemを持ってくる方法の検討
+→sgpostransformでpickobjectで帰ってくる。
+→sgpostransformから
+・assemblerpartsの召喚テスト
+nameが出てくるからそれを使って判定？
+・アイテムを消す、つけるのテスト→クリアsetTuenedOn(true or false)
+現状bodyアイテムをつけたり消したりするのはむずい
+全部sceneでつくるわ
+
+
+
+gitでのコミット
+git add src/AssemblerVRProcess.cpp
+git status 
+git commit -m 'WIP: up'
+git diff
+git checkout -b devel_temp
+git push origin devel_temp2
+git branch
+git log

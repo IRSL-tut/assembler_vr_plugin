@@ -6,10 +6,12 @@ set(target CnoidAssemblerVRPlugin)
 set(sources
   src/AssemblerVRPlugin.cpp
   src/AssemblerVRProcess.cpp
+  src/VR_UIbuttonGrid.cpp
   )
 set(headers
   src/AssemblerVRPlugin.h
   src/AssemblerVRProcess.h
+  src/VR_UIbuttonGrid.h
   )
 if (NOT WIN32)
   add_definitions(-Wno-deprecated-declarations)
@@ -38,6 +40,7 @@ else()
   choreonoid_add_plugin(${target} ${sources} HEADERS ${headers})
   target_link_libraries(${target} PUBLIC
     CnoidUtil
+    CnoidBodyPlugin
     RobotAssembler
     CnoidRobotAssemblerPlugin
     CnoidOpenVRPlugin
