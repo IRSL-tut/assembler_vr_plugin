@@ -24,7 +24,8 @@ public:
     coordinates convertOpenGLToChoreonoid(const coordinates& openglCoords);
     void setLeftCoords(const coordinates &cds);
     void setRightCoords(const coordinates &cds);
-    void grabrobot(ra::RASceneRobotPtr rb,const coordinates &hand);
+    void grabrobot(ra::RASceneRobotPtr rb,const coordinates &hand ,const coordinates &prev_hand);
+    void autoAttachNearbyParts(double threshold);
     void updateControllerState(const controllerState &left, const controllerState &right);
     void moveBodyItem(BodyItem* bodyItemPtr, const Vector3& translation);
     void move_body_byJoy(BodyItem *bodyItemPtr,double l_joy_x,double l_joy_y,double r_joy_x,double r_joy_y);
@@ -49,6 +50,7 @@ public:
     void updateRightBeam(const coordinates& handCoords,GLSLSceneRenderer *glsr);
     void updateRedPointer(const Vector3& pickedPoint, bool hasIntersection);
     void updateRightBeamAndPointer(const coordinates& handCoords, GLSLSceneRenderer* glsr);
+    void moveLastRobotInFrontOfHMD();
     std::ostream *os_;
 
 //private:
@@ -76,13 +78,15 @@ public:
     SgScaleTransformPtr image_Dynamixel_XL_scale;
 
     coordinates test_redball;
-    coordinates PreviousControllerCoords;
+    coordinates PreviousControllerCoords_right;
+    coordinates PreviousControllerCoords_left;
     robot_assembler::RASceneBase *obj = nullptr;
     robot_assembler::RASceneParts *pt_ = nullptr;
     robot_assembler::RASceneConnectingPoint *cp_ = nullptr;
     robot_assembler::RASceneConnectingPoint *cp_test = nullptr;
     robot_assembler::RASceneRobot *rb_ = nullptr;
-    robot_assembler::RASceneRobot *rb_near = nullptr;
+    robot_assembler::RASceneRobot *rb_near_right = nullptr;
+    robot_assembler::RASceneRobot *rb_near_left = nullptr;
     
     cnoid::VR_UIbuttonGrid* menu = nullptr;
     std::vector<VR_UIbuttonGrid*> menu_parts;

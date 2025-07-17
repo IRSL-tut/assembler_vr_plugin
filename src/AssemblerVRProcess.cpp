@@ -1,6 +1,7 @@
 #include "AssemblerVRProcess.h"
 #include "VR_UIbuttonGrid.h"
 
+//#define DEBUG_MODE
 
 #include <unordered_set> // 標準ライブラリのヘッダーを先にインクルード
 #include <cnoid/RootItem>
@@ -17,8 +18,10 @@
 #include <cnoid/Body>
 #include <cnoid/EigenUtil>
 
+
 #define Assembler_mode 0
 #define Parts_mode 1
+
 
 using namespace cnoid;
 using namespace cnoid::robot_assembler;
@@ -275,6 +278,7 @@ void AssemblerVRProcess::updateControllerState(const controllerState &right, con
     if (!!as_manager) {
         // Assembler_mode 0
         // Parts_mode 1
+        #ifdef DEBUG_MODE//メイン処理
         if(VR_ASSEMBLER_MODE == Assembler_mode){
             obj = search_parts(glsr);
             if(!!obj){
@@ -304,7 +308,7 @@ void AssemblerVRProcess::updateControllerState(const controllerState &right, con
             }
             
             if(left.buttons[1] && !previous_button_state_l[1]){//セレクトY
-                if(left.buttons[4]){
+                if(left.buttons[3]){
                     as_manager->deleteRobot(rb_);
                 }
                 else{
@@ -314,21 +318,30 @@ void AssemblerVRProcess::updateControllerState(const controllerState &right, con
                 }
             }
 
-            if (right.buttons[3]) {//移動・回転モード裏大
-                if(!previous_button_state_r[3]){
-                    rb_near = as_manager->searchNearest(right.coords.pos, 0.1);
+            if(left.buttons[3]){//左手でパーツをつかむ（左裏大）
+                if(!previous_button_state_l[3]){//ボタン状態が変わったとき
+                    rb_near_left   = as_manager->searchNearest(left.coords.pos, 0.1);
                 }
-                if(!!rb_near){
+                if(!!rb_near_left){
                     left_switch->setTurnedOn(false);
-                    right_switch->setTurnedOn(false);
-                    grabrobot(rb_near,right.coords);
+                    grabrobot(rb_near_left,left.coords,PreviousControllerCoords_left);
                 }
             }
-            else{
-                left_switch->setTurnedOn(true);
-                right_switch->setTurnedOn(true);
+            else{left_switch->setTurnedOn(true);}
+
+            if (right.buttons[3]) {//右手でパーツをつかむ（右裏大）
+                if(!previous_button_state_r[3]){
+                    rb_near_right   = as_manager->searchNearest(right.coords.pos, 0.1);
+                }
+                if(!!rb_near_right){
+                    right_switch->setTurnedOn(false);
+                    grabrobot(rb_near_right ,right.coords,PreviousControllerCoords_right);
+                }
             }
+            else{right_switch->setTurnedOn(true);}
         }
+
+
         if(VR_ASSEMBLER_MODE == Parts_mode){
 
             //カメラに追従する
@@ -357,12 +370,13 @@ void AssemblerVRProcess::updateControllerState(const controllerState &right, con
             if (right.buttons[3] && !previous_button_state_r[3]) {//rightの裏大トリガー
                 if(!!picked_partsbutton){
                     as_manager->partsButtonClicked(picked_partsbutton->name());
+                    moveLastRobotInFrontOfHMD();
                     vr_plugin->causeVive(500);
                 }
             }
         }
         // //終了処理
-        if(left.buttons[3] && !previous_button_state_l[3]){
+        if(left.buttons[4] && !previous_button_state_l[4]){
             *os_ << "assembler:mode changed"<<std::endl;
             if(VR_ASSEMBLER_MODE == Assembler_mode){
                 VR_ASSEMBLER_MODE = Parts_mode;
@@ -390,8 +404,41 @@ void AssemblerVRProcess::updateControllerState(const controllerState &right, con
                 }
             }
         }
+        #else//テストモードの処理
+            if (left.buttons[3]) {//左手でパーツをつかむ（左裏大）
+                if(!previous_button_state_l[3]){
+                    rb_near_left   = as_manager->searchNearest(left.coords.pos, 0.1);
+                }
+                if(!!rb_near_left){
+                    left_switch->setTurnedOn(false);
+                    grabrobot(rb_near_left ,left.coords,PreviousControllerCoords_left);
+                }
+            }
+            else{left_switch->setTurnedOn(true);}
 
-        PreviousControllerCoords = right.coords;//コントローラのcoords保持
+            if (right.buttons[3] && !previous_button_state_r[3]){
+                as_manager->moveAllRobotsToPlane(Vector3(0.0, 0.0, 1.0), 0.001);
+
+            }
+            //testコード（assemblerの基礎機能の確認)
+            if (right.buttons[0] && !previous_button_state_r[0]){
+                as_manager->test_getAllSceneParts();//getallscenepartsの確認関数
+            }
+            if (right.buttons[1] && !previous_button_state_r[1]){
+                //先生デフォルト
+                // as_manager->searchMatchedPoints(0.1);
+                // as_manager->attachRobots(true,true,1);
+
+                as_manager->searchMatchedPoints(0.1);
+                as_manager -> attachRobotsPreserveRotation();
+
+            }
+        #endif
+
+        
+        
+        PreviousControllerCoords_right = right.coords;//右コントローラのcoords保持
+        PreviousControllerCoords_left  = left.coords;//左コントローラのcoords保持
         //ボタンの終了処理
         for(int i=0;i<right.buttons.size();i++){
             previous_button_state_r[i] = right.buttons[i];
@@ -400,9 +447,6 @@ void AssemblerVRProcess::updateControllerState(const controllerState &right, con
 
     }
 
-    
-    
-    //move_body_byJoy(image_Dynamixel_XL,left.axes[0],left.axes[1],right.axes[0],right.axes[1]);
     return;
 }
 
@@ -414,12 +458,6 @@ void cnoid::AssemblerVRProcess::moveBodyItem(BodyItem *bodyItemPtr,const Vector3
     rootLink->setPosition(currentPosition);
     bodyItemPtr->notifyKinematicStateChange(true);
 }
-// void cnoid::AssemblerVRProcess::follow_body_toCamera(BodyItem *bodyItemPtr){//作りかけ
-//     coordinates camera_coords = vr_plugin->CameraOrigin();
-//     Link* rootLink = bodyItemPtr->body()->rootLink();
-//     Isometry3 currentTransform = rootLink->position();
-    
-// }
 void cnoid::AssemblerVRProcess::move_body_byJoy(BodyItem *bodyItemPtr,double l_joy_x,double l_joy_y,double r_joy_x,double r_joy_y){
     Link* rootLink = bodyItemPtr->body()->rootLink();
     Isometry3 currentTransform = rootLink->position();
@@ -469,13 +507,13 @@ BodyItemPtr cnoid::AssemblerVRProcess::findBodyItemFromNodePath(const SgNodePath
 }
 
 
-void AssemblerVRProcess::grabrobot(ra::RASceneRobotPtr rb,const coordinates &hand){
+void AssemblerVRProcess::grabrobot(ra::RASceneRobotPtr rb,const coordinates &hand ,const coordinates &prev_hand){
     coordinates diff,set;
     coordinates cds(rb->T());//objのcoordsを取得
     set = hand;
-    diff.pos = hand.pos - PreviousControllerCoords.pos;//コントローラの位置変化量
+    diff.pos = hand.pos - prev_hand.pos;//コントローラの位置変化量
     set.pos = cds.pos + diff.pos;//差分位置の加算
-    Matrix3 rotationMatrix = hand.rot * PreviousControllerCoords.rot.transpose();
+    Matrix3 rotationMatrix = hand.rot * prev_hand.rot.transpose();
     set.rot =rotationMatrix * cds.rot;
     as_manager->selectRobot(rb);
     //as_manager->move_robot(rb,set);
@@ -903,4 +941,15 @@ void AssemblerVRProcess::updateRightBeamAndPointer(const coordinates& handCoords
 
     // 更新を通知
     highlightTransform->notifyUpdate(SgUpdate::Modified);
+}
+
+void AssemblerVRProcess::moveLastRobotInFrontOfHMD()//作成したロボットパーツを画面の前に移動
+{   
+    coordinates target;
+    target.pos = Vector3(0.0, 0.0, 1.0);  // 固定位置に設定
+    target.rot = Matrix3::Identity();    // 回転なし（正面）
+
+    AssemblerManager::instance()->moveLastRobotTo(target);
+
+    MessageView::instance()->cout() << "[DEBUG] MoveTo (Fixed): " << target.pos.transpose() << std::endl;
 }
